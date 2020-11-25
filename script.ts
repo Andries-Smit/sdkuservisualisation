@@ -2,6 +2,8 @@ import { MendixSdkClient, OnlineWorkingCopy, Project, Revision, Branch, loadAsPr
 import { domainmodels, microflows, pages, navigation, security, IStructure, menus } from "mendixmodelsdk";
 
 import when = require("when");
+require("dotenv").config();
+
 const fs = require("fs");
 const ws = fs.createWriteStream("web/mendix.json");
 
@@ -10,16 +12,20 @@ interface Item {
     children?: Item[];
     parent?: Item | string;
 }
-
 const jsonObj: Item = {};
 
-const username = "{{userName}}";
-const apikey = "{{apikey}}";
-const projectId = "{{projectId}}";
-const projectName = "{{projectName}}";
+const username = process.env.USER_NAME;
+const apiKey = process.env.API_KEY;
+const projectId = process.env.PROJECT_ID;
+const projectName = process.env.PROJECT_NAME;
+
+if (!username || !apiKey || !projectId || !projectName) {
+    console.error("Configuration is missing please provide .env file or set environment variables, see README.md");
+    process.exit(1);
+}
 const revNo = -1; // -1 for latest
 const branchName = null; // null for mainline
-const client = new MendixSdkClient(username, apikey);
+const client = new MendixSdkClient(username, apiKey);
 
 /*
  * PROJECT TO ANALYZE
